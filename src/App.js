@@ -21,6 +21,7 @@ function App() {
       </header> */}
 
       <Test />
+      <Test />
 
     </div>
   );
