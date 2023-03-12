@@ -9,10 +9,13 @@ import CartItem from '../models/item';
 import CartService from "../services/cart.service";
 import Category from "../models/category";
 import store from '../redux/store';
+import {  useNavigate } from "react-router-dom";
 
-import { Link } from "react-router-dom";
+
 
 const Products = () => {
+  const navigate = useNavigate();
+
   const currentUser = store.getState().user;
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState(data);
@@ -25,6 +28,11 @@ const Products = () => {
 
   const addProduct = (product) => {
     // dispatch(addCart(product))
+    if(!currentUser){
+      alert("You should Login First");
+      navigate('/login')
+      return;
+    }
     const item=new CartItem(1,currentUser.id,product.id);
     CartService.addToCart(item).then((resp)=>{
       console.log("Item is Added");

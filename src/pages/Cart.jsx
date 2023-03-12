@@ -8,6 +8,7 @@ import { addCart, delCart } from "../redux/action";
 import { Link } from "react-router-dom";
 import CartItem from '../models/item';
 
+
 const Cart = () => {
   const [cart, setCart] = useState({});
   const currentUser = store.getState().user;
@@ -250,12 +251,7 @@ const Cart = () => {
                       </li>
                     </ul>
 
-                    <Link
-                      to="/"
-                      className="btn btn-dark btn-lg btn-block"
-                    >
-                      Place Order
-                    </Link>
+                    <Link to="/checkout" className="btn btn-dark btn-lg btn-block"> Check Out </Link>
                   </div>
                 </div>
               </div>
