@@ -20,7 +20,7 @@ const Cart = () => {
 
     CartService.getMyCart(currentUser.id).then((response) => {
       setCart(response.data);
-      console.log(response.data);
+      // console.log(response.data);
 
       });
 
@@ -46,7 +46,7 @@ const Cart = () => {
   };
 
   const addItem = (product) => {
-    console.log("In add");
+    // console.log("In add");
 
     const item1=new CartItem(1,currentUser.id,product.productId.id);
     CartService.addToCart(item1).then((resp)=>{
@@ -56,7 +56,7 @@ const Cart = () => {
           item.totalPrice=item.totalPrice+item.productId.price;
         }
       })
-      console.log(cart.cartItems);
+      // console.log(cart.cartItems);
       const tp=cart.totalPrice+product.productId.price;
 
       setCart(prevState=>{
@@ -67,7 +67,7 @@ const Cart = () => {
           ["totalPrice"]: tp
       }
       })
-      console.log("In add"+cart.totalPrice)
+      // console.log("In add"+cart.totalPrice)
     // < EmptyCart />
 
     });
@@ -84,7 +84,7 @@ const Cart = () => {
             cart.cartItems.splice(index,1);
           }
         })
-        console.log(cart.cartItems);
+        // console.log(cart.cartItems);
         const tp=cart.totalPrice-product.productId.price;
 
         setCart(prevState=>{
@@ -109,7 +109,7 @@ const Cart = () => {
             item.totalPrice=item.totalPrice-item.productId.price;
           }
         })
-        console.log(cart.cartItems);
+        // console.log(cart.cartItems);
         const tp=cart.totalPrice-product.productId.price;
         setCart(prevState=>{
         return{
@@ -244,14 +244,14 @@ const Cart = () => {
                         <div>
                           <strong>Total amount</strong>
                         </div>
-                        {console.log(cart)}
+                        {/* {console.log(cart)} */}
                         <span>
                           <strong>Rs {parseInt(cart.totalPrice) + shipping}</strong>
                         </span>
                       </li>
                     </ul>
 
-                    <Link to="/checkout" className="btn btn-dark btn-lg btn-block"> Check Out </Link>
+                    <Link to="/checkout" className="btn btn-dark btn-lg btn-block" myCart={cart}> Check Out </Link>
                   </div>
                 </div>
               </div>

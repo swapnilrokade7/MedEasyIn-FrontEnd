@@ -3,10 +3,8 @@ export default class Product {
     this.name = name;
     this.price = price;
     this.description = description;
-    this.stock=stock
-    this.categoryId=categoryId
-   
-   this.expDate=expDate
-    //  this.url = url;
+    this.stock=stock;
+    this.categoryId=categoryId;
+    this.expDate=expDate;
   }
 }

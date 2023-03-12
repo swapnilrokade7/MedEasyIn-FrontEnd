@@ -12,16 +12,16 @@ const AddCategory = () => {
     const [category , setCategory] = useState(new Category('',''));
     const navigate = useNavigate();
 
-   const handleChange = (e)=>{
-   const {name,value} = e.target;
-    setCategory(prevState=>{
-    return{
-        ...prevState , 
-        [name]:value
+    const handleChange = (e)=>{
+    const {name,value} = e.target;
+        setCategory(prevState=>{
+            return{
+                ...prevState , 
+                [name]:value
+            }
+        })
     }
- }
- )
-   }
+    
    const handleAddCategory=(e)=>{
         e.preventDefault();
         

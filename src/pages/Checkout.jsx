@@ -1,9 +1,50 @@
 import React from "react";
+import { useState, useEffect } from "react";
 import { Footer } from "../components";
 import { useSelector } from "react-redux";
+import OrderService from "../services/order.service";
 import { Link } from "react-router-dom";
+import CartService from "../services/cart.service";
+import store from '../redux/store';
+import Address from "../models/address";
+import {  useNavigate } from "react-router-dom";
+
+
+
 const Checkout = () => {
-  const state = useSelector((state) => state.handleCart);
+  const navigate = useNavigate();
+  const [state,setState] = useState([]);
+  const [address,setAddress] = useState(new Address('','','','',''));
+  const currentUser = store.getState().user;
+
+  useEffect(() => {
+    CartService.getMyCart(currentUser.id).then((response) => {
+      setState(response.data);
+      });
+  }, []);
+
+  const handleChange = (e)=>{
+    const {name,value} = e.target;
+        setAddress(prevState=>{
+            return{
+                ...prevState , 
+                [name]:value
+            };
+        });
+    }
+
+  const handleAddress=(e)=>{
+    e.preventDefault();
+    OrderService.saveOrder(currentUser.id,address).then((resp)=>{
+      console.log("Birth Of Order");
+      CartService.emptyMyCart(currentUser.id).then(()=>{
+        console.log("Death Of Cart");
+        navigate("/");
+      })
+    })
+
+    alert("Order Placed");
+  }
 
   const EmptyCart = () => {
     return (
@@ -22,13 +63,13 @@ const Checkout = () => {
 
   const ShowCheckout = () => {
     let subtotal = 0;
-    let shipping = 30.0;
+    let shipping = 40;
     let totalItems = 0;
-    state.map((item) => {
+    state.cartItems.map((item) => {
       return (subtotal += item.price * item.qty);
     });
 
-    state.map((item) => {
+    state.cartItems.map((item) => {
       return (totalItems += item.qty);
     });
     return (
@@ -40,25 +81,31 @@ const Checkout = () => {
                 <div className="card-header py-3 bg-light">
                   <h5 className="mb-0">Order Summary</h5>
                 </div>
+    
                 <div className="card-body">
-                  <ul className="list-group list-group-flush">
-                    <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
-                      Products ({totalItems})<span>${Math.round(subtotal)}</span>
-                    </li>
-                    <li className="list-group-item d-flex justify-content-between align-items-center px-0">
-                      Shipping
-                      <span>${shipping}</span>
-                    </li>
-                    <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
-                      <div>
-                        <strong>Total amount</strong>
-                      </div>
-                      <span>
-                        <strong>${Math.round(subtotal + shipping)}</strong>
-                      </span>
-                    </li>
-                  </ul>
-                </div>
+                    <ul className="list-group list-group-flush">
+                      {
+                        state.cartItems.map((item,index)=>{
+                          return(<li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
+                            {index+1})  {item.productId.name} x {item.quantity}  <span>Rs {item.totalPrice}</span>
+                          </li>)
+                        })
+                      }
+                      
+                      <li className="list-group-item d-flex justify-content-between align-items-center px-0">
+                        Shipping
+                        <span>Rs {shipping}</span>
+                      </li>
+                      <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+                        <div>
+                          <strong>Total amount</strong>
+                        </div>
+                        <span>
+                          <strong>Rs {parseInt(state.totalPrice) + shipping}</strong>
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
               </div>
             </div>
             <div className="col-md-7 col-lg-8">
@@ -67,69 +114,24 @@ const Checkout = () => {
                   <h4 className="mb-0">Billing address</h4>
                 </div>
                 <div className="card-body">
-                  <form className="needs-validation" novalidate>
+                  <form className="needs-validation" novalidate  onSubmit={(e) => handleAddress(e)}>
                     <div className="row g-3">
-                      <div className="col-sm-6 my-1">
-                        <label for="firstName" className="form-label">
-                          First name
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="firstName"
-                          placeholder=""
-                          value=""
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Valid first name is required.
-                        </div>
-                      </div>
-
-                      <div className="col-sm-6 my-1">
-                        <label for="lastName" className="form-label">
-                          Last name
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="lastName"
-                          placeholder=""
-                          value=""
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Valid last name is required.
-                        </div>
-                      </div>
+                      
+                      
 
                       <div className="col-12 my-1">
-                        <label for="email" className="form-label">
-                          Email
-                        </label>
-                        <input
-                          type="email"
-                          className="form-control"
-                          id="email"
-                          placeholder="you@example.com"
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Please enter a valid email address for shipping
-                          updates.
-                        </div>
-                      </div>
-
-                      <div className="col-12 my-1">
-                        <label for="address" className="form-label">
+                        <label for="adressLine1" className="form-label">
                           Address
                         </label>
                         <input
                           type="text"
                           className="form-control"
-                          id="address"
+                          id="adressLine1"
+                          name="adressLine1"
                           placeholder="1234 Main St"
+                          value={address.adressLine1}
                           required
+                          onChange={handleChange}
                         />
                         <div className="invalid-feedback">
                           Please enter your shipping address.
@@ -137,56 +139,66 @@ const Checkout = () => {
                       </div>
 
                       <div className="col-12">
-                        <label for="address2" className="form-label">
-                          Address 2{" "}
-                          <span className="text-muted">(Optional)</span>
+                        <label for="adressLine2" className="form-label">
+                          Address 2
                         </label>
                         <input
                           type="text"
                           className="form-control"
-                          id="address2"
+                          id="adressLine2"
+                          name="adressLine2"
                           placeholder="Apartment or suite"
+                          value={address.adressLine2}
+                          required
+                          onChange={handleChange}
+                        />
+                      </div>
+
+                      <div className="col-12">
+                        <label for="city" className="form-label">
+                          City 
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="city"
+                          name="city"
+                          placeholder="City"
+                          value={address.city}
+                          required
+                          onChange={handleChange}
                         />
                       </div>
 
                       <div className="col-md-5 my-1">
-                        <label for="country" className="form-label">
-                          Country
-                        </label>
-                        <br />
-                        <select className="form-select" id="country" required>
-                          <option value="">Choose...</option>
-                          <option>India</option>
-                        </select>
-                        <div className="invalid-feedback">
-                          Please select a valid country.
-                        </div>
-                      </div>
-
-                      <div className="col-md-4 my-1">
                         <label for="state" className="form-label">
-                          State
+                          State 
                         </label>
-                        <br />
-                        <select className="form-select" id="state" required>
-                          <option value="">Choose...</option>
-                          <option>Punjab</option>
-                        </select>
-                        <div className="invalid-feedback">
-                          Please provide a valid state.
-                        </div>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="state"
+                          name="state"
+                          placeholder="State"
+                          value={address.state}
+                          required
+                          onChange={handleChange}
+                        />
                       </div>
 
                       <div className="col-md-3 my-1">
-                        <label for="zip" className="form-label">
+                        <label for="zipCode" className="form-label">
                           Zip
                         </label>
                         <input
                           type="text"
                           className="form-control"
-                          id="zip"
-                          placeholder=""
+                          id="zipCode"
+                          name="zipCode"
+                          placeholder="Zip Code"
+                          value={address.zipCode}
                           required
+                          onChange={handleChange}
                         />
                         <div className="invalid-feedback">
                           Zip code required.
@@ -271,10 +283,9 @@ const Checkout = () => {
 
                     <button
                       className="w-100 btn btn-primary "
-                      type="submit" disabled
-                    >
-                      Continue to checkout
+                      type="submit">Place Order
                     </button>
+
                   </form>
                 </div>
               </div>
@@ -290,7 +301,7 @@ const Checkout = () => {
       <div className="container my-3 py-3">
         <h1 className="text-center">Checkout</h1>
         <hr />
-        {state.length ? <ShowCheckout /> : <EmptyCart />}
+        {state.totalItems > 0 ? <ShowCheckout /> : <EmptyCart />}
       </div>
       <Footer />
     </>
@@ -298,3 +309,7 @@ const Checkout = () => {
 };
 
 export default Checkout;
+
+
+
+

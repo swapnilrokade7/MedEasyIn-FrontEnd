@@ -23,7 +23,6 @@ const Register = () => {
   const handleChange=(event)=>{
     const {name, value} = event.target;
     setUser((prevState => {
-        //e.g: prevState ({user: x, pass: x}) + newKeyValue ({user: xy}) => ({user: xy, pass: x})
         return {
             ...prevState,
             [name]: value

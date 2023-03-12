@@ -9,25 +9,6 @@ const currentUser = store.getState().user;
 const API_URL = BASE_API_URL + '/cart';
 
 class CartService {
-    // saveCaerItem(product) {
-    //   return axios.post(API_URL, product, { headers: authHeader() });
-    // }
-  
-    // //upload product image
-    // uploadProductImage(image, productId) {
-    //   let formData = new FormData();
-    //   formData.append('imageFile', image);
-    //   console.log('in upload img ' + formData + ' ' + productId);
-    //   return axios
-    //     .post(`${API_URL}/${productId}/image`, formData, {
-    //       headers: authImageHeader(),
-    //     })
-    //     .then((response) => response.data);
-    // }
-  
-    // deleteProduct(product) {
-    //   return axios.delete(API_URL + '/' + product.id, { headers: authHeader() });
-    // }
   
     getMyCartItems(id) {
       return axios.get(API_URL+ `/${id}`,{ headers: authHeader() });
@@ -47,6 +28,10 @@ class CartService {
 
     getMyCart(id) {
       return axios.get(API_URL+ `/${id}`,{ headers: authHeader() });
+    }
+
+    emptyMyCart(id) {
+      return axios.delete(API_URL+ `/${id}`,{ headers: authHeader() });
     }
   
   

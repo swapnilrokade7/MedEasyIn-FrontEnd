@@ -3,11 +3,7 @@ import { useState } from "react";
 // import { useNavigate } from "react-router-dom";
 import { Footer } from "../components";
 import {  useNavigate } from "react-router-dom";
-
-
 import Product from "../models/product";
-
-
 import categoryService from "../services/category.service";
 import productService from "../services/product.service";
 import ProductService from '../services/product.service';
@@ -32,9 +28,6 @@ const AddCategory = () => {
         console.log(product);
     }
     useEffect(() => {
-
-
-
         categoryService.getAllCategories().then((resp) => {
             console.log(resp.data)
             setCategoryList(resp.data)
@@ -45,11 +38,10 @@ const AddCategory = () => {
         e.preventDefault();
         // console.log(product.categoryId)
         productService.saveProduct(product).then((resp) => {
-            console.log("Product added Success")
-
+            console.log("Product added Success");
             productService.uploadProductImage(image, resp.data.id).then(() => {
                 alert("Product Added");
-                navigate('/product')
+                navigate('/updateproduct')
             });
         })
     }
